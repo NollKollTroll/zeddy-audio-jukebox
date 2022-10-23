@@ -14,6 +14,8 @@ There is also a version that can use a simple R2R-DAC connected on port B of the
 The playlist can be changed easily to accomodate your own audio files. The player code is only 2 files and builds using PokeMon's utility ZX-IDE available at http://sinclairzxworld.com/viewtopic.php?f=6&t=1064<br>
 The small changes needed are in the file zaj.asm, located between the horizontal lines.
 
+**Note about file-names**: FAT16 file-name rules apply with max 8 characters/numbers before the three-letter file extension. The ZX81 also does not like many of the "modern" characters one can use in a file-name. A good way to test this is to name some files on an SD-card and do CAT on the ZX81 to see what it actually thinks about the file-names.
+
 ## Transcoding / ZAJ
 
 The required audio files can be created by following this process:
@@ -38,16 +40,36 @@ The play command is part of sox.
 
 There are command line options for changing the dither and error diffusion in the converter, try them out for different/better results.
 
-## Transcoding / RAW
+## Transcoding / RAW, SOX
 
 The required audio files can be created by following this process:
 
 1. Convert the input file test.mp3 to a raw 22109 Hz audio file, 8-bit unsigned, mono, named audio03.raw:<br>
 sox test.mp3 -t raw -r 22109 -b 8 -e unsigned-integer -c 1 audio03.raw
 
-2. Calculate the number of blocks to play by taking the file-length divided by 256. The integer part without rounding is the number of blocks to use in the playlist.
+2. Calculate the number of blocks to play by taking the file-size divided by 256. The integer part without rounding is the number of blocks to use in the playlist.
 
 The replay rate of 22109 Hz is less than 0.27% faster than 22050 Hz, so it is OK to use that if converting sound by some other means.
+
+## Transcoding / RAW, with Audacity
+
+1. Open an audio file in Audacity.
+2. Convert to mono:
+	- Tracks / Mix / Mix stereo down to mono.
+3. Resample track to 22050Hz:
+	- Tracks / Resample / select 22050, press OK.
+4. Change **Project Rate (Hz)** to 22050, usually in the bottom row, left selector box.
+5. Export to RAW:
+	- File / Export / Export Audio
+	- Just above the **Save** button, change to **Other uncompressed files**.
+	- In **Header** select **RAW (Header-less)**.
+	- In **Encoding** select **Unsigned 8-bit PCM**.
+	- Name the file something simple like TRACK01.RAW.
+	- Press the **Save** button.
+6. Calculate the number of blocks to play, two alternatives:
+	- In a file browser, get the file-size in bytes, divide this by 256, cut off the decimals.
+	- In Audacity, bottom row, change to **Start and End of Selection** and below that select **samples** instead of time. Select / All will give you a large number in the info box below the **Start and End of Selection**. Take this number, divide by 256, cut off the decimals.
+7. Edit the zajraw.asm file to use the file-name and number of blocks from the transcoding above.
 
 ## Emulators
 
