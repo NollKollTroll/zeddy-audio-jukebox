@@ -10,8 +10,6 @@
 //<http://creativecommons.org/publicdomain/zero/1.0/>.
 
 ;---------------------------------------------------------------
-AudioBlocks	dw	0
-
 align 256
 SAMPLE_BUF_A db 32 dup(0,0,0,0,15,15,15,15)
 SAMPLE_BUF_B db 128 dup(0,15)
@@ -31,13 +29,50 @@ PRT7	EQU	$e007
 AY_REG	EQU	$DF
 AY_DATA EQU	$0F
 
+BlocksToPlay	dw	0
+FileName	dbzx	'12345678.RAW '
+
+;---------------------------------------------------------------
+Main:
+	//NMI off
+	out	($FD),a
+	push	ix
+	push	iy
+	push	bc
+	push	de
+	push	hl
+	push	af
+	exx
+	ex	af,af
+	push	bc
+	push	de
+	push	hl
+	push	af
+
+
+	ld	de,FileName
+	call	PlayFile
+
+	pop	af
+	pop	hl
+	pop	de
+	pop	bc
+	ex	af,af
+	exx
+	pop	af
+	pop	hl
+	pop	de
+	pop	bc
+	pop	iy
+	pop	ix
+	//NMI on
+	out	($fe),a
+	ret
+
 ;---------------------------------------------------------------
 //input:
 //  DE points to zero-terminated filename
-//  BC is the nr of 256-byte audio blocks
 PlayFile:
-	//init loop counter
-	ld	(AudioBlocks),bc
 	//prepare buffer for write
 	ld	bc,PRT0
 	ld	a,$ff
@@ -88,7 +123,7 @@ PlayFile:
 	out	(AY_DATA),a
 	//init read statemachine
 	ld	ix,RequestRead256_A
-	ld	de,(AudioBlocks)
+	ld	de,(BlocksToPlay)
 	exx
 	//init play statemachine
 	ld	iy,PlayBuf_A
@@ -112,11 +147,11 @@ RestartStreaming:
 		end repeat
 		in	a,(c)
 	jp	m,.DelayStart
+	//wait until break is not pressed
+.WaitKeyOff:
 	ld	b,0
 .delay:
 	djnz	.delay
-	//wait until break is not pressed
-.WaitKeyOff:
 	ld	a,$7f
 	in	a,($fe)
 	and	1

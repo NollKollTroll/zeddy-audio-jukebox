@@ -18,37 +18,36 @@ format zx81
 	DFILETYPE  EQU	   EXPANDED	   // COLLAPSED or EXPANDED or AUTO
 	include '..\..\SINCL-ZX\ZX81.INC'  // definitions of constants
 ;LISTON
-	AUTOLINE 10
+AUTOLINE 0
 	REM _hide _asm
-
-;---------------------------------------------------------------
-FileName_00	dbzx	'ocean2.raw', 0
-BLOCKS_00	EQU	22658
-
-FileName_01	dbzx	'monty.raw', 0
-BLOCKS_01	EQU	30822
-
-;---------------------------------------------------------------
-Main:
-	//NMI off
-	out	($FD),a
-MainLoop:
-	ld	de,FileName_00
-	ld	bc,BLOCKS_00
-	call	PlayFile
-
-	ld	de,FileName_01
-	ld	bc,BLOCKS_01
-	call	PlayFile
-
-	jp	MainLoop
-
 	include 'zajraw.inc'
-
 	END _asm
 
-AUTORUN:
+AUTOLINE 10
+//AUTORUN:
+100	REM playlist begin
+	LET N$ = "OCEAN2.RAW "
+	LET B = 22658
+	GOSUB 1000
+	LET N$ = "MONTY.RAW "
+	LET B = 30822
+	GOSUB 1000
+998	REM playlist end
+999	GOTO 100
+1000	SCROLL
+	PRINT AT 21,0; N$, B
+	LET C = INT(B / 256)
+	LET D = B - (C * 256)
+	POKE #BlocksToPlay + 1, C
+	POKE #BlocksToPlay, D
+	FOR I = 1 TO LEN N$
+	LET J = (#FileName - 1) + I
+	POKE J,CODE N$(I)
+	NEXT I
+WAIT_NO_KEY:
+	IF INKEY$<>"" THEN GOTO #WAIT_NO_KEY#
 	RAND USR #Main
+	RETURN
 
 //include D_FILE and needed memory areas
 include '..\..\SINCL-ZX\ZX81DISP.INC'
