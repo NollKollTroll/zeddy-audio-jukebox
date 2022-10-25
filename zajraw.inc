@@ -136,25 +136,23 @@ RestartStreaming:
 	ld	bc,PRT7
 	ld	a,$b8
 	out	(c),a
+	ld	bc,0
 	//close file
 	ld	bc,PRT4
 	ld	a,$80
 	out	(c),a
 	//get response code
 	.DelayStart:
-		repeat 32
+		repeat 16
 			nop
 		end repeat
 		in	a,(c)
 	jp	m,.DelayStart
 	//wait until break is not pressed
 .WaitKeyOff:
-	ld	bc,1000
+	ld	b,32
 .delay:
-	dec	bc
-	ld	a,b
-	or	c
-	jp	nz,.delay
+	djnz	.delay
 	ld	a,$7f
 	in	a,($fe)
 	rra
@@ -198,7 +196,7 @@ GetResponseCode_A:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,PrepareReadMagic_A	//14
+	ld	ix,WaitForPlayBufDone_A //14
 	exx				//4
 	jp	(iy)			//8 -> 79
 .TryAgain:
@@ -216,7 +214,7 @@ GetResponseCode_B:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,PrepareReadMagic_B	//14
+	ld	ix,WaitForPlayBufDone_B //14
 	exx				//4
 	jp	(iy)			//8 -> 79
 .TryAgain:
@@ -224,31 +222,6 @@ GetResponseCode_B:
 		nop				//4 waste cycles
 	end repeat
 	ld	a,0			//7 waste cycles
-	exx				//4
-	jp	(iy)			//8 -> 79
-
-;--------
-PrepareReadMagic_A:
-	exx				//4
-	ld	bc,PRT0 		//10
-	ld	a,42			//7
-	out	(c),a			//12
-	ld	ix,WaitForPlayBufDone_A //14
-	repeat 5
-		nop				//4 waste cycles
-	end repeat
-	exx				//4
-	jp	(iy)			//8 -> 79
-
-PrepareReadMagic_B:
-	exx				//4
-	ld	bc,PRT0 		//10
-	ld	a,42			//7
-	out	(c),a			//12
-	ld	ix,WaitForPlayBufDone_B //14
-	repeat 5
-		nop				//4 waste cycles
-	end repeat
 	exx				//4
 	jp	(iy)			//8 -> 79
 

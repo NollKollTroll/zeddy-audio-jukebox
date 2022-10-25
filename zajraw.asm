@@ -26,6 +26,7 @@ AUTOLINE 0
 	include 'zajraw.inc'
 	END _asm
 
+AUTOSTART:
 AUTOLINE 10
 100	REM playlist begin
 	LET N$ = "OCEAN2.RAW "	//The filename, DO NOT leave out the trailing space
@@ -48,9 +49,6 @@ AUTOLINE 10
 	LET J = (#FileName - 1) + I
 	POKE J,CODE N$(I)
 	NEXT I
-	//Make sure there is no key pressed before continuing
-WAIT_NO_KEY:
-	IF INKEY$<>"" THEN GOTO #WAIT_NO_KEY#
 	//Finally play it
 	RAND USR #Main
 	RETURN
