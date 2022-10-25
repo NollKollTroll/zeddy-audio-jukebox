@@ -19,23 +19,27 @@ format zx81
 	include '..\..\SINCL-ZX\ZX81.INC'  // definitions of constants
 ;LISTON
 AUTOLINE 0
-	REM _hide _asm
+	REM RAW_AUDIO_JUKEBOX_V0.2
+	REM RUN_TO_LISTEN
+	REM SPACE_->_NEXT_SONG
+	REM _noedit _asm
 	include 'zajraw.inc'
 	END _asm
 
 AUTOLINE 10
-//AUTORUN:
 100	REM playlist begin
-	LET N$ = "OCEAN2.RAW "
-	LET B = 22658
-	GOSUB 1000
+	LET N$ = "OCEAN2.RAW "	//The filename, DO NOT leave out the trailing space
+	LET B = 22658		//Number of 256-sample blocks to play, max 65535
+	GOSUB 1000		//Prepare and play the song
 	LET N$ = "MONTY.RAW "
 	LET B = 30822
 	GOSUB 1000
 998	REM playlist end
-999	GOTO 100
+999	GOTO 100		//Repeat the playlist
+
 1000	SCROLL
 	PRINT AT 21,0; N$, B
+	//Move the info about the file to the assembler domain before playing
 	LET C = INT(B / 256)
 	LET D = B - (C * 256)
 	POKE #BlocksToPlay + 1, C
@@ -44,8 +48,10 @@ AUTOLINE 10
 	LET J = (#FileName - 1) + I
 	POKE J,CODE N$(I)
 	NEXT I
+	//Make sure there is no key pressed before continuing
 WAIT_NO_KEY:
 	IF INKEY$<>"" THEN GOTO #WAIT_NO_KEY#
+	//Finally play it
 	RAND USR #Main
 	RETURN
 

@@ -10,13 +10,6 @@
 //<http://creativecommons.org/publicdomain/zero/1.0/>.
 
 ;---------------------------------------------------------------
-align 256
-SAMPLE_BUF_A db 32 dup(0,0,0,0,15,15,15,15)
-SAMPLE_BUF_B db 128 dup(0,15)
-
-SAMPLE_BUF_A_HI EQU SAMPLE_BUF_A / 256
-SAMPLE_BUF_B_HI EQU SAMPLE_BUF_B / 256
-
 PRT0	EQU	$0007
 PRT1	EQU	$2007
 PRT2	EQU	$4007
@@ -30,7 +23,14 @@ AY_REG	EQU	$DF
 AY_DATA EQU	$0F
 
 BlocksToPlay	dw	0
-FileName	dbzx	'12345678.RAW '
+FileName	db 13 dup 0
+
+align 256
+SAMPLE_BUF_A db 256 dup 0
+SAMPLE_BUF_B db 256 dup 0
+
+SAMPLE_BUF_A_HI EQU SAMPLE_BUF_A / 256
+SAMPLE_BUF_B_HI EQU SAMPLE_BUF_B / 256
 
 ;---------------------------------------------------------------
 Main:
@@ -149,13 +149,16 @@ RestartStreaming:
 	jp	m,.DelayStart
 	//wait until break is not pressed
 .WaitKeyOff:
-	ld	b,0
+	ld	bc,1000
 .delay:
-	djnz	.delay
+	dec	bc
+	ld	a,b
+	or	c
+	jp	nz,.delay
 	ld	a,$7f
 	in	a,($fe)
-	and	1
-	jp	z,.WaitKeyOff
+	rra
+	jp	nc,.WaitKeyOff
 	//clear red led
 	ld	bc,PRT7
 	ld	a,$b9
