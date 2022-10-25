@@ -180,7 +180,7 @@ GetResponseCode_A:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,PrepareReadMagic_A	//14
+	ld	ix,WaitForPlayBufDone_A //14
 	repeat 3
 		nop				//4 waste cycles
 	end repeat
@@ -201,7 +201,7 @@ GetResponseCode_B:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,PrepareReadMagic_B	//14
+	ld	ix,WaitForPlayBufDone_B //14
 	repeat 3
 		nop				//4 waste cycles
 	end repeat
@@ -212,33 +212,6 @@ GetResponseCode_B:
 	repeat 13
 		nop				//4 waste cycles
 	end repeat
-	exx				//4
-	jp	(iy)			//8 -> 100
-
-;--------
-PrepareReadMagic_A:
-	exx				//4
-	ld	bc,PRT0 		//10
-	ld	a,42			//7
-	out	(c),a			//12
-	ld	ix,WaitForPlayBufDone_A //14
-	repeat 8
-		nop				//4 waste cycles
-	end repeat
-	ld	a,i			//9 waste cycles
-	exx				//4
-	jp	(iy)			//8 -> 100
-
-PrepareReadMagic_B:
-	exx				//4
-	ld	bc,PRT0 		//10
-	ld	a,42			//7
-	out	(c),a			//12
-	ld	ix,WaitForPlayBufDone_B //14
-	repeat 8
-		nop				//4 waste cycles
-	end repeat
-	ld	a,i			//9 waste cycles
 	exx				//4
 	jp	(iy)			//8 -> 100
 
