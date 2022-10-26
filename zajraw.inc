@@ -196,7 +196,7 @@ GetResponseCode_A:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,WaitForPlayBufDone_A //14
+	ld	ix,PrepareZXpand_A	//14
 	exx				//4
 	jp	(iy)			//8 -> 79
 .TryAgain:
@@ -214,7 +214,7 @@ GetResponseCode_B:
 	jp	m,.TryAgain		//10/10
 	cp	$40			//7
 	jp	nz,RestartStreaming	//10/10 major problem, hard restart
-	ld	ix,WaitForPlayBufDone_B //14
+	ld	ix,PrepareZXpand_B	//14
 	exx				//4
 	jp	(iy)			//8 -> 79
 .TryAgain:
@@ -222,6 +222,31 @@ GetResponseCode_B:
 		nop				//4 waste cycles
 	end repeat
 	ld	a,0			//7 waste cycles
+	exx				//4
+	jp	(iy)			//8 -> 79
+
+;--------
+PrepareZXpand_A:
+	exx				//4
+	ld	bc,PRT0 		//10
+	ld	a,0			//7
+	out	(c),a			//12
+	ld	b,PRT1/256		//7
+	ld	ix,WaitForPlayBufDone_A //14
+	nop				//4 waste cycles
+	ld	a,r			//9 waste cycles
+	exx				//4
+	jp	(iy)			//8 -> 79
+
+PrepareZXpand_B:
+	exx				//4
+	ld	bc,PRT0 		//10
+	ld	a,0			//7
+	out	(c),a			//12
+	ld	b,PRT1/256		//7
+	ld	ix,WaitForPlayBufDone_B //14
+	nop				//4 waste cycles
+	ld	a,r			//9 waste cycles
 	exx				//4
 	jp	(iy)			//8 -> 79
 

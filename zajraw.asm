@@ -22,17 +22,17 @@ AUTOLINE 0
 	REM RAW_AUDIO_JUKEBOX_V0.2
 	REM RUN_TO_LISTEN
 	REM SPACE_->_NEXT_SONG
-	REM _noedit _asm
+	REM _asm
 	include 'zajraw.inc'
 	END _asm
 
 AUTOSTART:
 AUTOLINE 10
 100	REM playlist begin
-	LET N$ = "OCEAN2.RAW "	//The filename, DO NOT leave out the trailing space
+	LET N$ = "OCEAN2.RAW"	//The filename, DO NOT leave out the trailing space
 	LET B = 22658		//Number of 256-sample blocks to play, max 65535
 	GOSUB 1000		//Prepare and play the song
-	LET N$ = "MONTY.RAW "
+	LET N$ = "MONTY.RAW"
 	LET B = 30822
 	GOSUB 1000
 998	REM playlist end
@@ -45,10 +45,12 @@ AUTOLINE 10
 	LET D = B - (C * 256)
 	POKE #BlocksToPlay + 1, C
 	POKE #BlocksToPlay, D
+	LET J = #FileName
 	FOR I = 1 TO LEN N$
-	LET J = (#FileName - 1) + I
-	POKE J,CODE N$(I)
+	POKE J, CODE N$(I)
+	LET J = J + 1
 	NEXT I
+	POKE J, 0
 	//Finally play it
 	RAND USR #Main
 	RETURN
