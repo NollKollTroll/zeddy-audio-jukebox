@@ -73,8 +73,7 @@ The replay rate of 22109 Hz is less than 0.27% faster than 22050 Hz, so it is OK
 
 ## Emulators
 
-My trusty go-to emulator EightyOne v1.29 failed to play the files, regardless of the settings I tested.<br>
-If you want to listen to crappy audio, use a real ZX81!
+My trusty go-to emulator EightyOne v1.29 plays the files, but the sound quality is even worse than the real thing.
 
 ## History
 
@@ -95,5 +94,5 @@ The music was released by Kevin MacLeod, licensed under Creative Commons Attribu
 
 ## Contact
 
-Mail: <adam.klotblixt@gmail.com><br>
-Github: <https://github.com/NollKollTroll/zeddy-audio-jukebox>
+Mail: adam.klotblixt@gmail.com<br>
+Github: https://github.com/NollKollTroll/zeddy-audio-jukebox
