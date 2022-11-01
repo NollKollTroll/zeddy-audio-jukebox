@@ -19,11 +19,11 @@ PRT5	EQU	$a007
 PRT6	EQU	$c007
 PRT7	EQU	$e007
 
-AY_REG	EQU	$DF
+AY_REG	EQU	$CF
 AY_DATA EQU	$0F
 
 BlocksToPlay	dw	0
-FileName	db 13 dup 0
+FileName	db	13 dup 0
 
 align 256
 SAMPLE_BUF_A db 256 dup 0
