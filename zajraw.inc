@@ -99,7 +99,6 @@ PlayFile:
 	cp	$40
 	//maybe do something better for error handling...
 	jp	nz,RestartStreaming
-
 	//InitPSG
 	//AY reg_0 = 0, vol A lo
 	ld	a,0
@@ -121,6 +120,17 @@ PlayFile:
 	out	(AY_REG),a
 	ld	a,0
 	out	(AY_DATA),a
+	//clear sample buffers
+	ld	hl,SAMPLE_BUF_A
+.ClearBufferA:
+	ld	(hl),128
+	inc	l
+	jp	nz,.ClearBufferA
+	ld	hl,SAMPLE_BUF_B
+.ClearBufferB:
+	ld	(hl),128
+	inc	l
+	jp	nz,.ClearBufferB
 	//init read statemachine
 	ld	ix,RequestRead256_A
 	ld	de,(BlocksToPlay)
@@ -394,10 +404,9 @@ PlayBuf_A:
 	inc	l			//4
 	jp	z,.NextBuf		//10/10
 .NextSample:
-	ld	a,0			//7 waste cycles
-	ld	a,0			//7 waste cycles
-	ld	a,0			//7 waste cycles
-	nop				//4 waste cycles
+	repeat 7
+		nop				//4 waste cycles
+	end repeat
 	jp	(ix)			//8 -> 68
 .NextBuf:
 	ld	hl,SAMPLE_BUF_B 	//10
@@ -412,10 +421,9 @@ PlayBuf_B:
 	inc	l			//4
 	jp	z,.NextBuf		//10/10
 .NextSample:
-	ld	a,0			//7 waste cycles
-	ld	a,0			//7 waste cycles
-	ld	a,0			//7 waste cycles
-	nop				//4 waste cycles
+	repeat 7
+		nop				//4 waste cycles
+	end repeat
 	jp	(ix)			//8 -> 68
 .NextBuf:
 	ld	hl,SAMPLE_BUF_A 	//10
